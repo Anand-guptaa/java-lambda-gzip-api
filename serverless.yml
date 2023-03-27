@@ -1,0 +1,40 @@
+service: java-lambda-gzip-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: java8
+  memorySize: 512 # optional, in MB, default is 1024
+  timeout: 10 # optional, in seconds, default is 6
+  versionFunctions: false # optional, default is true
+  stage: dev
+  region: ap-northeast-1
+  apiGateway:
+    shouldStartNameWithService: true
+  environment:
+    region: ${self:provider.region}
+    STAGE: ${self:provider.stage}
+    version: 1.0.0.0  
+package:
+  artifact: target/gzip-dev.jar
+
+functions:
+  gzipHandler:
+    handler: com.awslambdapoc.handler.GzipAPIHandler
+    name: java-lambda-gzip-function
+    timeout: 29
+    events:
+    - http:
+        path: gzip
+        method: get
+        cors: true
+  apiHandler:
+    handler: com.awslambdapoc.handler.APIHandler
+    name: java-lambda-without-gzip-function
+    timeout: 29
+    events:
+    - http:
+        path: api
+        method: get
+        cors: true       
+        
